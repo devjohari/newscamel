@@ -22,17 +22,24 @@ export class Newsbox extends Component {
          pagesize: 15,
       };
    }
+
    async componentDidUpdate(prevProp) {
       if (!(prevProp.cat === this.props.cat)) {
          await this.setState({
             page: 1,
          });
+         document.title = `NewsCamel - ${this.props.cat.replace(
+            this.props.cat.charAt(0),
+            this.props.cat.charAt(0).toUpperCase()
+         )}`;
          this.fetcher(0);
       }
    }
+
    async componentDidMount() {
       this.fetcher(0);
    }
+
    fetcher = async (numb) => {
       document.getElementById("next").style.display = "none";
       document.getElementById("prev").style.display = "none";
@@ -60,6 +67,7 @@ export class Newsbox extends Component {
       document.getElementById("next").style.display = "inline-block";
       document.getElementById("prev").style.display = "inline-block";
    };
+
    render() {
       return (
          <div className="container my-3 text-center">
