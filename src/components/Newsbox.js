@@ -1,17 +1,34 @@
 import React, { Component } from "react";
 import LoadingAnime from "./LoadingAnime";
 import News from "./News";
+import PropTypes from "prop-types";
 
 export class Newsbox extends Component {
-   constructor() {
-      super();
+   static defaultProps = {
+      country: "IN",
+      cat: "general",
+   };
+   static propTypes = {
+      cat: PropTypes.string,
+      country: PropTypes.string,
+   };
+   constructor(props) {
+      super(props);
       this.state = {
          finaldata: [],
          loading: true,
          page: 1,
          totalresult: 0,
-         pagesize: 20,
+         pagesize: 15,
       };
+   }
+   async componentDidUpdate(prevProp) {
+      if (!(prevProp.cat === this.props.cat)) {
+         await this.setState({
+            page: 1,
+         });
+         this.fetcher(0);
+      }
    }
    async componentDidMount() {
       this.fetcher(0);
@@ -22,7 +39,11 @@ export class Newsbox extends Component {
       this.setState({ loading: true });
       try {
          let rawdata = await fetch(
-            `https://newsapi.org/v2/top-headlines?country=in&apiKey=1de62e09e7bf489b87957c49ec5462e5&pageSize=${
+            `https://newsapi.org/v2/top-headlines?country=${
+               this.props.country
+            }&category=${
+               this.props.cat
+            }&apiKey=1de62e09e7bf489b87957c49ec5462e5&pageSize=${
                this.state.pagesize
             }&page=${this.state.page + numb}`
          );
@@ -34,7 +55,7 @@ export class Newsbox extends Component {
             loading: false,
          });
       } catch (error) {
-         console.log(error);
+         console.log("error");
       }
       document.getElementById("next").style.display = "inline-block";
       document.getElementById("prev").style.display = "inline-block";
@@ -74,7 +95,7 @@ export class Newsbox extends Component {
                   }}
                   disabled={this.state.page <= 1}
                >
-                  Prev
+                  prev
                </button>
                <button
                   type="button"
