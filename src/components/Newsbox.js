@@ -71,7 +71,13 @@ export class Newsbox extends Component {
    render() {
       return (
          <div className="container my-3 text-center">
-            <h2 className="my-3 py-3">Welcome to the NewsCamel</h2>
+            <h2 className="my-3 py-3">
+               {this.props.cat.replace(
+                  this.props.charAt(0),
+                  this.props.charAt(0).toUpperCase
+               )}{" "}
+               Headlines - NewsCamel
+            </h2>
             <div className="row">
                {this.state.loading && <h1>Loading</h1>}
                {!this.state.loading
@@ -80,10 +86,7 @@ export class Newsbox extends Component {
                           <News
                              key={element.url}
                              title={String(element.title).slice(0, 45)}
-                             description={String(element.description).slice(
-                                0,
-                                88
-                             )}
+                             description={String(element.description)}
                              imageUrl={element.urlToImage}
                              Url={element.url}
                           />
