@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import LoadingAnime from "./LoadingAnime";
 import News from "./News";
+import InfiniteScroll from "react-infinite-scroll-component";
 import PropTypes from "prop-types";
 
 export class Newsbox extends Component {
@@ -68,14 +69,41 @@ export class Newsbox extends Component {
       document.getElementById("prev").style.display = "inline-block";
    };
 
+   fetchMoreData = async () => {
+      this.setState({ loading: true });
+      try {
+         let rawdata = await fetch(
+            `https://newsapi.org/v2/top-headlines?country=${
+               this.props.country
+            }&category=${
+               this.props.cat
+            }&apiKey=1de62e09e7bf489b87957c49ec5462e5&pageSize=${
+               this.state.pagesize
+            }&page=${this.state.page + 1}`
+         );
+         let data = await rawdata.json();
+         this.setState({
+            finaldata: data.articles,
+            page: this.state.page + 1,
+            totalresult: Number(data.totalResults),
+            loading: false,
+         });
+      } catch (error) {
+         console.log("error");
+      }
+   };
+
    render() {
       return (
          <div className="container my-3 text-center">
             <h2 className="my-3 py-3">
-               {this.props.cat.replace(
-                  this.props.charAt(0),
-                  this.props.charAt(0).toUpperCase
-               )}{" "}
+               {`
+
+${this.props.cat.replace(
+   this.props.cat.charAt(0),
+   this.props.cat.charAt(0).toUpperCase()
+)} 
+   `}
                Headlines - NewsCamel
             </h2>
             <div className="row">
@@ -125,6 +153,17 @@ export class Newsbox extends Component {
                >
                   Next
                </button>
+               {/* <InfiniteScroll
+                  dataLength={this.state.finaldata.length}
+                  next={this.fetchMoreData}
+                  style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
+                  inverse={true} //
+                  hasMore={
+                     !(this.state.finaldata.length == this.state.totalresult)
+                  }
+                  loader={<h4>Loading...</h4>}
+                  scrollableTarget="scrollableDiv"
+               ></InfiniteScroll> */}
             </div>
          </div>
       );
