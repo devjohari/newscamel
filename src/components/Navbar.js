@@ -3,8 +3,14 @@ import { Link } from "react-router-dom";
 
 export class navbar extends Component {
    render() {
+      document.getElementsByClassName("nav-item").onClick = () => {
+         console.log("Hi");
+      };
       return (
-         <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
+         <nav
+            className="navbar navbar-expand-lg bg-dark navbar-dark"
+            style={{ position: "sticky", top: "0", zIndex: "9" }}
+         >
             <div className="container-fluid">
                <Link className="navbar-brand" to={"/"}>
                   NewsCamel
@@ -31,7 +37,7 @@ export class navbar extends Component {
                            aria-current="page"
                            to={"/"}
                         >
-                           Home
+                           General
                         </Link>
                      </li>
                      <li className="nav-item">

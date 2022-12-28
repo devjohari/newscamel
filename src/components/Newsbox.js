@@ -42,6 +42,14 @@ export class Newsbox extends Component {
 
    async componentDidMount() {
       this.fetcher(0);
+      const doc = document.querySelectorAll(".nav-item");
+      doc.forEach((item) => {
+         item.addEventListener("click", () => {
+            if (this.props.cat.toLowerCase() === item.innerText.toLowerCase()) {
+               window.scrollTo(0, 0);
+            }
+         });
+      });
    }
 
    fetcher = async (numb) => {
@@ -99,6 +107,9 @@ export class Newsbox extends Component {
    };
 
    render() {
+      document.getElementsByClassName("nav-item").onClick = () => {
+         console.log("Hi");
+      };
       return (
          <>
             <LoadingBar
