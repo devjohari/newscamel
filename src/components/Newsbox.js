@@ -3,8 +3,10 @@ import LoadingAnime from "./LoadingAnime";
 import News from "./News";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PropTypes from "prop-types";
+import LoadingBar from "react-top-loading-bar";
 
 export class Newsbox extends Component {
+   apiKey = process.env.NEWS_CAMEL_OOS;
    static defaultProps = {
       country: "IN",
       cat: "general",
@@ -21,6 +23,7 @@ export class Newsbox extends Component {
          page: 1,
          totalresult: 0,
          pagesize: 15,
+         progress: 10,
       };
    }
 
@@ -42,52 +45,55 @@ export class Newsbox extends Component {
    }
 
    fetcher = async (numb) => {
-      document.getElementById("next").style.display = "none";
-      document.getElementById("prev").style.display = "none";
-      this.setState({ loading: true });
+      // document.getElementById("next").style.display = "none";
+      // document.getElementById("prev").style.display = "none";
+      this.setState({ loading: true, progress: 20 });
       try {
          let rawdata = await fetch(
             `https://newsapi.org/v2/top-headlines?country=${
                this.props.country
             }&category=${
                this.props.cat
-            }&apiKey=1de62e09e7bf489b87957c49ec5462e5&pageSize=${
+            }&apiKey=a231adc6514149e0a5120a8e1cb253fd&pageSize=${
                this.state.pagesize
             }&page=${this.state.page + numb}`
          );
+         this.setState({ progress: 50 });
          let data = await rawdata.json();
+         this.setState({ progress: 80 });
          this.setState({
             finaldata: data.articles,
             page: this.state.page + numb,
             totalresult: Number(data.totalResults),
             loading: false,
+            progress: 100,
          });
       } catch (error) {
          console.log("error");
       }
-      document.getElementById("next").style.display = "inline-block";
-      document.getElementById("prev").style.display = "inline-block";
+      // document.getElementById("next").style.display = "inline-block";
+      // document.getElementById("prev").style.display = "inline-block";
    };
 
    fetchMoreData = async () => {
-      this.setState({ loading: true });
+      console.log("Came in to work");
       try {
          let rawdata = await fetch(
             `https://newsapi.org/v2/top-headlines?country=${
                this.props.country
             }&category=${
                this.props.cat
-            }&apiKey=1de62e09e7bf489b87957c49ec5462e5&pageSize=${
+            }&apiKey=a231adc6514149e0a5120a8e1cb253fd&pageSize=${
                this.state.pagesize
             }&page=${this.state.page + 1}`
          );
          let data = await rawdata.json();
-         this.setState({
-            finaldata: data.articles,
-            page: this.state.page + 1,
-            totalresult: Number(data.totalResults),
-            loading: false,
-         });
+         setTimeout(() => {
+            this.setState({
+               finaldata: this.state.finaldata.concat(data.articles),
+               page: this.state.page + 1,
+            });
+         }, 500);
       } catch (error) {
          console.log("error");
       }
@@ -95,37 +101,44 @@ export class Newsbox extends Component {
 
    render() {
       return (
-         <div className="container my-3 text-center">
-            <h2 className="my-3 py-3">
-               {`
+         <>
+            <LoadingBar
+               height={2.5}
+               color="#f11946"
+               progress={this.state.progress}
+               onLoaderFinished={() => this.setState({ progress: 0 })}
+            />
+            <div className="container my-3 text-center">
+               <h2 className="my-3 py-3">
+                  {`
 
 ${this.props.cat.replace(
    this.props.cat.charAt(0),
    this.props.cat.charAt(0).toUpperCase()
 )} 
    `}
-               Headlines - NewsCamel
-            </h2>
-            <div className="row">
-               {this.state.loading && <h1>Loading</h1>}
-               {!this.state.loading
-                  ? this.state.finaldata.map((element) => {
-                       return (
-                          <News
-                             key={element.url}
-                             title={String(element.title).slice(0, 45)}
-                             description={String(element.description)}
-                             imageUrl={element.urlToImage}
-                             Url={element.url}
-                          />
-                       );
-                    })
-                  : [...Array(9)].map((e, i) => {
-                       return <LoadingAnime key={i}></LoadingAnime>;
-                    })}
-            </div>
-            <div className="d-flex justify-content-center gap-2">
-               <button
+                  Headlines - NewsCamel
+               </h2>
+               <div className="row">
+                  {this.state.loading && <h1>Loading</h1>}
+                  {!this.state.loading
+                     ? this.state.finaldata.map((element) => {
+                          return (
+                             <News
+                                key={element.url}
+                                title={String(element.title).slice(0, 45)}
+                                description={String(element.description)}
+                                imageUrl={element.urlToImage}
+                                Url={element.url}
+                             />
+                          );
+                       })
+                     : [...Array(9)].map((e, i) => {
+                          return <LoadingAnime key={i}></LoadingAnime>;
+                       })}
+               </div>
+               <div className="d-flex justify-content-center gap-2">
+                  {/* <button
                   type="button"
                   className="btn btn-dark"
                   id="prev"
@@ -133,10 +146,10 @@ ${this.props.cat.replace(
                      this.fetcher(-1);
                   }}
                   disabled={this.state.page <= 1}
-               >
+                  >
                   prev
-               </button>
-               <button
+                  </button>
+                  <button
                   type="button"
                   id="next"
                   className="btn btn-dark"
@@ -147,25 +160,35 @@ ${this.props.cat.replace(
                      !(
                         Math.ceil(
                            this.state.totalresult / this.state.pagesize
-                        ) > this.state.page
-                     )
-                  }
-               >
-                  Next
-               </button>
-               {/* <InfiniteScroll
-                  dataLength={this.state.finaldata.length}
-                  next={this.fetchMoreData}
-                  style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
-                  inverse={true} //
-                  hasMore={
-                     !(this.state.finaldata.length == this.state.totalresult)
-                  }
-                  loader={<h4>Loading...</h4>}
-                  scrollableTarget="scrollableDiv"
-               ></InfiniteScroll> */}
+                           ) > this.state.page
+                           )
+                        }
+                        >
+                        Next
+                     </button> */}
+               </div>
             </div>
-         </div>
+            <InfiniteScroll
+               dataLength={this.state.finaldata.length}
+               next={this.fetchMoreData}
+               //To put endMessage and loader to the top.
+               // inverse={true} //
+               hasMore={
+                  !(this.state.finaldata.length === this.state.totalresult)
+               }
+               style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  padding: "2rem",
+               }}
+               loader={
+                  <div class="spinner-border" role="status">
+                     <span class="sr-only"></span>
+                  </div>
+               }
+               // scrollableTarget="scrollableDiv"
+            />
+         </>
       );
    }
 }
