@@ -2,14 +2,27 @@ import React, { Component } from "react";
 
 export class News extends Component {
    render() {
-      // let { title, description, imageUrl, Url } = this.props;
-      // console.log(imageUrl);
-      // if (description == null) {
-      //    console.log("Nhi AAYA");
-      // }
       return (
          <div className="col-md-4 text-center">
-            <div className="my-3 text-center">
+            <div className="my-3 text-center" style={{ position: "relative" }}>
+               <p
+                  style={{
+                     display: "inline-block",
+                     fontSize: "0.8rem",
+                     fontFamily: "verdana",
+                     fontWeight: "bold",
+                     padding: "0.2rem 0.4rem",
+                     backgroundColor: "red",
+                     borderRadius: "1rem",
+                     position: "absolute",
+                     top: "0",
+                     right: "0",
+                     color: "white",
+                     zIndex: "1",
+                  }}
+               >
+                  {this.props.author == null ? "NA" : this.props.author}
+               </p>
                <div className="card">
                   <img
                      src={

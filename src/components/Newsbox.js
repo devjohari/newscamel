@@ -76,7 +76,6 @@ export class Newsbox extends Component {
    };
 
    fetchMoreData = async () => {
-      console.log("Came in to work");
       try {
          let rawdata = await fetch(
             `https://newsapi.org/v2/top-headlines?country=${
@@ -111,12 +110,11 @@ export class Newsbox extends Component {
             <div className="container my-3 text-center">
                <h2 className="my-3 py-3">
                   {`
-
-${this.props.cat.replace(
-   this.props.cat.charAt(0),
-   this.props.cat.charAt(0).toUpperCase()
-)} 
-   `}
+                  ${this.props.cat.replace(
+                     this.props.cat.charAt(0),
+                     this.props.cat.charAt(0).toUpperCase()
+                  )} 
+                  `}
                   Headlines - NewsCamel
                </h2>
                <div className="row">
@@ -130,42 +128,13 @@ ${this.props.cat.replace(
                                 description={String(element.description)}
                                 imageUrl={element.urlToImage}
                                 Url={element.url}
+                                author={element.author}
                              />
                           );
                        })
                      : [...Array(9)].map((e, i) => {
                           return <LoadingAnime key={i}></LoadingAnime>;
                        })}
-               </div>
-               <div className="d-flex justify-content-center gap-2">
-                  {/* <button
-                  type="button"
-                  className="btn btn-dark"
-                  id="prev"
-                  onClick={() => {
-                     this.fetcher(-1);
-                  }}
-                  disabled={this.state.page <= 1}
-                  >
-                  prev
-                  </button>
-                  <button
-                  type="button"
-                  id="next"
-                  className="btn btn-dark"
-                  onClick={() => {
-                     this.fetcher(1);
-                  }}
-                  disabled={
-                     !(
-                        Math.ceil(
-                           this.state.totalresult / this.state.pagesize
-                           ) > this.state.page
-                           )
-                        }
-                        >
-                        Next
-                     </button> */}
                </div>
             </div>
             <InfiniteScroll
@@ -182,8 +151,8 @@ ${this.props.cat.replace(
                   padding: "2rem",
                }}
                loader={
-                  <div class="spinner-border" role="status">
-                     <span class="sr-only"></span>
+                  <div className="spinner-border" role="status">
+                     <span className="sr-only"></span>
                   </div>
                }
                // scrollableTarget="scrollableDiv"
